@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -9,7 +8,6 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// CORS: allow local dev + your Netlify site
 app.use(
   cors({
     origin: [
@@ -20,14 +18,11 @@ app.use(
   })
 );
 
-// ---- Firebase Admin init (ENV first, fallback file for local) ----
 let cred;
 try {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // IMPORTANT: FIREBASE_SERVICE_ACCOUNT must be valid JSON (private_key uses \n)
     cred = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT));
   } else {
-    // For local-only if you keep a file (DO NOT commit):
     cred = admin.credential.cert("./serviceAccount.json");
   }
 } catch (e) {
@@ -42,11 +37,9 @@ admin.initializeApp({
 
 const db = admin.database();
 
-// ---- Health ----
-app.get("/", (_req, res) => res.send("✅ SafeCyl Backend Running"));
+app.get("/", (req, res) => res.send("✅ SafeCyl Backend Running"));
 
-// ---- Sensor demo (Realtime DB) ----
-app.get("/sensor", async (_req, res) => {
+app.get("/sensor", async (_, res) => {
   const snap = await db.ref("sensor").once("value");
   res.json(snap.val() ?? {});
 });
@@ -56,14 +49,9 @@ app.post("/sensor", async (req, res) => {
   res.json({ status: "updated" });
 });
 
-// ---- Frontend-expected demo APIs ----
-app.get("/api/ping", (_req, res) => {
-  res.json({ ok: true, time: Date.now() });
-});
+app.get("/api/ping", (_, res) => res.json({ ok: true, time: Date.now() }));
 
-app.get("/api/echo", (req, res) => {
-  res.json({ value: req.query.value ?? "" });
-});
+app.get("/api/echo", (req, res) => res.json({ value: req.query.value ?? "" }));
 
 app.post("/api/save", async (req, res) => {
   const value = req.body?.value ?? "";
@@ -71,6 +59,5 @@ app.post("/api/save", async (req, res) => {
   res.json({ status: "saved", value });
 });
 
-// ---- Start ----
-const PORT = process.env.PORT || 10000; // Render auto-detects this
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Backend → http://localhost:${PORT}`));
