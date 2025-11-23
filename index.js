@@ -13,7 +13,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://safecyl-frontend.vercel.app/",
-      "https://thriving-smakager-628315.netlify.app"
+      "https://thriving-smakager-628315.netlify.app",
     ],
     methods: ["GET", "POST", "OPTIONS"],
   })
@@ -72,6 +72,18 @@ app.post("/api/save", async (req, res) => {
   const value = req.body?.value ?? "";
   await db.ref("demo/value").set({ value, ts: Date.now() });
   res.json({ status: "saved", value });
+});
+
+// ---- Read entire DB ----
+app.get("/api/all", async (_req, res) => {
+  try {
+    const snap = await db.ref().once("value");
+    const data = snap.val();
+    res.json({ ok: true, data });
+  } catch (err) {
+    console.error("Error fetching all data:", err);
+    res.status(500).json({ ok: false, error: String(err) });
+  }
 });
 
 // ---- Start ----
