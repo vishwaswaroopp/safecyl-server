@@ -12,18 +12,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://safecyl-frontend.vercel.app",
       "https://safecyl-frontend.vercel.app/",
-      "https://thriving-smakager-628315.netlify.app",
-      "https://safecyl-frontend.netlify.app",
-      "https://safecyl-frontend.onrender.com",
-      // Add the specific domain if you know it, or use wildcard for development
-      /\.vercel\.app$/,
-      /\.netlify\.app$/,
-      /\.onrender\.com$/
+      "https://thriving-smakager-628315.netlify.app"
     ],
     methods: ["GET", "POST", "OPTIONS"],
-    credentials: true
   })
 );
 
